@@ -1,0 +1,153 @@
+<section class="auth-page">
+  <div class="auth-card">
+    <div class="auth-form-panel">
+      <a routerLink="/jobs" class="auth-brand">
+        <span class="auth-brand-mark">H</span>
+        <span>HireConnect</span>
+      </a>
+
+      <div class="auth-heading">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Sign in</h1>
+        <p>Enter your details below to access your account.</p>
+      </div>
+
+      <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <div *ngIf="errorMessage" class="auth-error">
+          {{ errorMessage }}
+        </div>
+
+        <div class="auth-field">
+          <label for="email">Email address</label>
+          <div class="auth-input-wrap">
+            <span>@</span>
+            <input id="email" formControlName="email" type="email" autocomplete="email" placeholder="Email" required
+              [ngClass]="{'invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}">
+          </div>
+          <p *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="auth-validation">
+            Please enter a valid email address.
+          </p>
+        </div>
+
+        <div class="auth-field">
+          <label for="password">Password</label>
+          <div class="auth-input-wrap">
+            <span>🔒︎</span>
+            <input id="password" formControlName="password" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="Password" required
+              [ngClass]="{'invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}">
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-row">
+          <span></span>
+          <button type="button" class="auth-text-button" (click)="openForgotPassword()">Forgot password?</button>
+        </div>
+
+        <div class="auth-submit-row">
+          <button type="submit" [disabled]="isLoading" class="auth-submit">
+            <span *ngIf="isLoading">Signing in...</span>
+            <span *ngIf="!isLoading">Login</span>
+          </button>
+          <a routerLink="/signup" class="auth-secondary-button">Create account</a>
+        </div>
+      </form>
+
+      <form *ngIf="showForgotPassword" class="auth-form reset-password-panel" [formGroup]="resetForm" (ngSubmit)="resetPassword()">
+        <div class="auth-heading reset-password-heading">
+          <p class="eyebrow">Reset password</p>
+          <h2>Forgot password?</h2>
+          <p>Verify your email with OTP and choose a new password.</p>
+        </div>
+
+        <div *ngIf="resetMessage" class="auth-error">
+          {{ resetMessage }}
+        </div>
+
+        <div class="auth-field">
+          <label for="reset-email">Email address</label>
+          <div class="auth-input-wrap">
+            <span>@</span>
+            <input id="reset-email" formControlName="email" type="email" autocomplete="email" placeholder="Email"
+              [readonly]="resetOtpVerified"
+              [ngClass]="{'invalid': resetForm.get('email')?.invalid && resetForm.get('email')?.touched}">
+            <button type="button" class="password-toggle" [disabled]="isResetLoading || resetOtpVerified" (click)="sendResetOtp()">
+              {{ resetOtpVerified ? 'Verified' : (resetOtpSent ? 'Resend' : 'Verify') }}
+            </button>
+          </div>
+          <p *ngIf="resetForm.get('email')?.invalid && resetForm.get('email')?.touched" class="auth-validation">
+            Please enter a valid email address.
+          </p>
+        </div>
+
+        <div *ngIf="resetOtpSent" class="auth-field">
+          <label for="reset-otp">Email OTP</label>
+          <div class="auth-input-wrap">
+            <span>*</span>
+            <input id="reset-otp" formControlName="otp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP"
+              [readonly]="resetOtpVerified"
+              [ngClass]="{'invalid': resetForm.get('otp')?.invalid && resetForm.get('otp')?.touched}">
+            <button type="button" class="password-toggle" [disabled]="isResetLoading || resetOtpVerified" (click)="verifyResetOtp()">
+              {{ resetOtpVerified ? 'Done' : (isVerifyingResetOtp ? 'Checking...' : 'Submit') }}
+            </button>
+          </div>
+          <p *ngIf="resetForm.get('otp')?.invalid && resetForm.get('otp')?.touched" class="auth-validation">
+            Please enter the 6-digit OTP sent to your email.
+          </p>
+        </div>
+
+        <div *ngIf="resetOtpSent" class="auth-field">
+          <label for="reset-password">New password</label>
+          <div class="auth-input-wrap">
+            <span>🔒︎</span>
+            <input id="reset-password" formControlName="password" [type]="showResetPassword ? 'text' : 'password'"
+              autocomplete="new-password" placeholder="New password"
+              [ngClass]="{'invalid': resetForm.get('password')?.invalid && resetForm.get('password')?.touched}">
+            <button type="button" class="password-toggle" (click)="toggleResetPasswordVisibility()" [attr.aria-label]="showResetPassword ? 'Hide password' : 'Show password'">
+              {{ showResetPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <p *ngIf="resetForm.get('password')?.invalid && resetForm.get('password')?.touched" class="auth-validation">
+            Password must be at least 6 characters and include one uppercase letter and one number.
+          </p>
+        </div>
+
+        <div class="auth-submit-row">
+          <button type="submit" [disabled]="isResetLoading || (resetOtpSent && !resetOtpVerified)" class="auth-submit">
+            <span *ngIf="isResetLoading">{{ resetOtpSent ? 'Please wait...' : 'Sending OTP...' }}</span>
+            <span *ngIf="!isResetLoading">{{ resetOtpSent ? 'Reset password' : 'Send OTP' }}</span>
+          </button>
+          <button type="button" class="auth-secondary-button" (click)="closeForgotPassword()">Back to login</button>
+        </div>
+      </form>
+
+      <div class="auth-divider">
+        <span>or continue with</span>
+      </div>
+
+      <div class="oauth-actions">
+        <button type="button" class="oauth-button" (click)="loginWithGoogle()">
+          <span class="oauth-icon google-icon">G</span>
+          <span>Google</span>
+        </button>
+        <button type="button" class="oauth-button" (click)="loginWithGithub()">
+          <span class="oauth-icon github-icon">GH</span>
+          <span>GitHub</span>
+        </button>
+      </div>
+    </div>
+
+    <aside class="auth-visual-panel">
+      <div class="auth-visual-content">
+        <span class="auth-visual-logo">H</span>
+        <strong>HireConnect</strong>
+        <div class="auth-visual-copy">
+          <p class="eyebrow">Build your career</p>
+          <h2>One profile for jobs, applicants, and hiring workflows.</h2>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
