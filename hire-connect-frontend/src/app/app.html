@@ -1,0 +1,199 @@
+<nav class="app-navbar">
+  <div class="nav-shell">
+    <div class="nav-row">
+      <a [routerLink]="brandRoute" class="brand" (click)="closeMobileMenu()">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <span>HireConnect</span>
+      </a>
+
+      <div class="desktop-nav nav-links">
+        <a *ngIf="!auth.isLoggedIn() || (auth.currentUser$ | async)?.role === 'CANDIDATE'" routerLink="/jobs" routerLinkActive="active" (click)="closeMobileMenu()">Find Jobs</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'EMPLOYER'" routerLink="/my-jobs" routerLinkActive="active" (click)="closeMobileMenu()">My Posted Jobs</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'EMPLOYER'" routerLink="/subscription" routerLinkActive="active" (click)="closeMobileMenu()">Subscription</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'EMPLOYER' || (auth.currentUser$ | async)?.role === 'ADMIN'" routerLink="/analytics" routerLinkActive="active" (click)="closeMobileMenu()">Analytics</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'CANDIDATE'" routerLink="/my-applications" routerLinkActive="active" (click)="closeMobileMenu()">My Applications</a>
+      </div>
+
+      <div class="desktop-nav nav-actions">
+        <a *ngIf="auth.isLoggedIn()" routerLink="/notifications" routerLinkActive="active" class="notification-button" aria-label="View notifications" (click)="closeMobileMenu()">
+          <span class="notification-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 3c-3.866 0-7 3.134-7 7v4.586L3.293 16.293A1 1 0 0 0 4 18h16a1 1 0 0 0 .707-1.707L19 14.586V10c0-3.866-3.134-7-7-7Zm0 18a2.5 2.5 0 0 1-2.45-2h4.9A2.5 2.5 0 0 1 12 21Z"/>
+            </svg>
+          </span>
+        </a>
+
+        <button class="theme-toggle" [class.dark-mode]="isDarkMode" type="button" (click)="toggleTheme()" [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+          <span class="theme-icon-circle" [class.sun]="isDarkMode" [class.moon]="!isDarkMode">
+            <span class="theme-icon" aria-hidden="true">
+              <svg *ngIf="isDarkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 1v2"></path>
+                <path d="M12 21v2"></path>
+                <path d="M4.22 4.22l1.42 1.42"></path>
+                <path d="M18.36 18.36l1.42 1.42"></path>
+                <path d="M1 12h2"></path>
+                <path d="M21 12h2"></path>
+                <path d="M4.22 19.78l1.42-1.42"></path>
+                <path d="M18.36 5.64l1.42-1.42"></path>
+              </svg>
+              <svg *ngIf="!isDarkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path>
+              </svg>
+            </span>
+          </span>
+        </button>
+
+        <ng-container *ngIf="(auth.currentUser$ | async) as user; else desktopNotLogged">
+          <div class="profile-menu" (click)="$event.stopPropagation()">
+            <button class="profile-trigger" type="button" (click)="toggleProfileMenu()" [attr.aria-expanded]="isProfileMenuOpen">
+              <span class="profile-avatar">{{ displayName(user).charAt(0) | uppercase }}</span>
+              <span class="profile-trigger-text">{{ displayName(user) }}</span>
+              <span class="profile-caret">v</span>
+            </button>
+
+            <div *ngIf="isProfileMenuOpen" class="profile-dropdown">
+              <div class="profile-dropdown-header">
+                <span class="profile-avatar large">{{ displayName(user).charAt(0) | uppercase }}</span>
+                <div>
+                  <strong>{{ displayName(user) }}</strong>
+                  <small>{{ user.email }}</small>
+                </div>
+              </div>
+              <div class="profile-detail">
+                <span>Role</span>
+                <strong>{{ user.role }}</strong>
+              </div>
+              <a routerLink="/profile" (click)="closeProfileMenu()" class="profile-dropdown-link">View profile</a>
+              <button (click)="logout()" class="profile-signout">Sign out</button>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #desktopNotLogged>
+          <a routerLink="/login" class="login-link nav-login-button">Log in</a>
+        </ng-template>
+      </div>
+
+      <div class="mobile-actions">
+        <a *ngIf="auth.isLoggedIn()" routerLink="/notifications" routerLinkActive="active" class="notification-button" aria-label="View notifications">
+          <span class="notification-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 3c-3.866 0-7 3.134-7 7v4.586L3.293 16.293A1 1 0 0 0 4 18h16a1 1 0 0 0 .707-1.707L19 14.586V10c0-3.866-3.134-7-7-7Zm0 18a2.5 2.5 0 0 1-2.45-2h4.9A2.5 2.5 0 0 1 12 21Z"/>
+            </svg>
+          </span>
+        </a>
+        <button class="theme-icon-button" [class.dark-mode]="isDarkMode" type="button" (click)="toggleTheme()" [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+          <span class="theme-icon-circle" [class.sun]="isDarkMode" [class.moon]="!isDarkMode">
+            <span class="theme-icon" aria-hidden="true">
+              <svg *ngIf="isDarkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 1v2"></path>
+                <path d="M12 21v2"></path>
+                <path d="M4.22 4.22l1.42 1.42"></path>
+                <path d="M18.36 18.36l1.42 1.42"></path>
+                <path d="M1 12h2"></path>
+                <path d="M21 12h2"></path>
+                <path d="M4.22 19.78l1.42-1.42"></path>
+                <path d="M18.36 5.64l1.42-1.42"></path>
+              </svg>
+              <svg *ngIf="!isDarkMode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path>
+              </svg>
+            </span>
+          </span>
+        </button>
+        <button class="menu-button" type="button" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" *ngIf="isMobileMenuOpen">
+      <div class="nav-links mobile-link-list">
+        <a *ngIf="!auth.isLoggedIn() || (auth.currentUser$ | async)?.role === 'CANDIDATE'" routerLink="/jobs" routerLinkActive="active" (click)="closeMobileMenu()">Find Jobs</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'EMPLOYER'" routerLink="/my-jobs" routerLinkActive="active" (click)="closeMobileMenu()">My Posted Jobs</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'EMPLOYER'" routerLink="/subscription" routerLinkActive="active" (click)="closeMobileMenu()">Subscription</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'EMPLOYER' || (auth.currentUser$ | async)?.role === 'ADMIN'" routerLink="/analytics" routerLinkActive="active" (click)="closeMobileMenu()">Analytics</a>
+        <a *ngIf="(auth.currentUser$ | async)?.role === 'CANDIDATE'" routerLink="/my-applications" routerLinkActive="active" (click)="closeMobileMenu()">My Applications</a>
+      </div>
+
+      <div class="mobile-account">
+        <ng-container *ngIf="(auth.currentUser$ | async) as user; else mobileNotLogged">
+          <div class="mobile-profile-card">
+            <div class="profile-dropdown-header">
+              <span class="profile-avatar large">{{ displayName(user).charAt(0) | uppercase }}</span>
+              <div>
+                <strong>{{ displayName(user) }}</strong>
+                <small>{{ user.email }}</small>
+              </div>
+            </div>
+            <div class="profile-detail">
+              <span>Role</span>
+              <strong>{{ user.role }}</strong>
+            </div>
+            <a routerLink="/profile" (click)="closeMobileMenu()" class="profile-dropdown-link">View profile</a>
+          </div>
+          <button (click)="logout()" class="signout-button full">Sign out</button>
+        </ng-container>
+
+        <ng-template #mobileNotLogged>
+          <a routerLink="/login" class="login-link nav-login-button full" (click)="closeMobileMenu()">Log in</a>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="app-main">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<footer *ngIf="showFooter" class="site-footer">
+  <div class="footer-shell">
+    <section class="footer-main">
+      <div class="footer-brand-panel">
+        <a [routerLink]="brandRoute" class="footer-brand">
+          <span class="footer-brand-mark">H</span>
+          <span>HireConnect</span>
+        </a>
+        <p>Applications, interviews, notifications, and hiring analytics in one place.</p>
+        <span class="footer-tagline">Hiring made clear, fast, and connected.</span>
+      </div>
+      <div class="footer-contact-panel">
+        <div class="footer-contact-list">
+          <a href="tel:+911204567890">
+            <strong>Phone: +91 120 456 7890</strong>
+          </a>
+          <a href="mailto:support@hireconnect.com">
+            <strong>Mail: support@hireconnect.com</strong>
+          </a>
+          <div>
+            <strong>Address: Mathura, Uttar Pradesh</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-bottom">
+      <span>&copy; 2026 HireConnect. All rights reserved.</span>
+      <div>
+        <a href="mailto:privacy@hireconnect.com">Privacy</a>
+        <a href="mailto:legal@hireconnect.com">Terms</a>
+        <a href="mailto:security@hireconnect.com">Security</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div *ngIf="toastService.toast$ | async as toast" class="fixed bottom-4 right-4 z-50 transition-all duration-300">
+  <div [ngClass]="{'bg-green-50 border-green-400 text-green-800': toast.type === 'success', 'bg-red-50 border-red-400 text-red-800': toast.type === 'error'}" class="border-l-4 p-4 rounded shadow-lg flex items-center min-w-[250px]">
+    <div class="ml-3">
+      <p class="text-sm font-medium">{{ toast.message }}</p>
+    </div>
+  </div>
+</div>
