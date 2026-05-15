@@ -1,0 +1,7 @@
+organization=ankitsahu6387
+projectKey=ankitsahu6387_HireConnectApp
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.87504
+dashboardUrl=https://sonarcloud.io/dashboard?id=ankitsahu6387_HireConnectApp
+ceTaskId=AZ4qi6tG7ECLXxhJrbJk
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZ4qi6tG7ECLXxhJrbJk
