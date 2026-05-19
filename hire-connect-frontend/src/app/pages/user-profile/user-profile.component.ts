@@ -33,8 +33,11 @@ import { Router } from '@angular/router';
             <div class="sm:col-span-1">
               <label class="block text-sm font-medium text-gray-700">Full Name</label>
               <div class="mt-1">
-                <input formControlName="name" type="text" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                <input formControlName="name" type="text" maxlength="30" [ngClass]="{'border-red-300 focus:ring-red-500 focus:border-red-500': profileForm.get('name')?.invalid && profileForm.get('name')?.touched}" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
               </div>
+              <p *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" class="mt-2 text-sm text-red-600">
+                Enter a valid name (2-30 characters, letters and spaces only).
+              </p>
             </div>
 
             <div class="sm:col-span-1">
@@ -66,7 +69,7 @@ import { Router } from '@angular/router';
             </div>
 
             <div class="sm:col-span-2" *ngIf="!isEmployer">
-              <label class="block text-sm font-medium text-gray-700">Resume Link (Optional)</label>
+              <label class="block text-sm font-medium text-gray-700">Resume Link </label>
               <div class="mt-1">
                 <input formControlName="resume" type="url" placeholder="https://drive.google.com/..." class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
               </div>
@@ -101,7 +104,12 @@ export class UserProfileComponent implements OnInit {
     private router: Router
   ) {
     this.profileForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(30),
+        Validators.pattern('^[a-zA-Z]+(?: [a-zA-Z]+)*$')
+      ]],
       email: [''],
       role: [''],
       skills: [''],
@@ -182,7 +190,10 @@ export class UserProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.profileForm.invalid) return;
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
 
     this.isSaving = true;
     const user = this.authService.getUser();
